@@ -30,7 +30,7 @@ def getPlaceType(placeType):
 
 
 def updatePlaceType(request):
-    API_KEY = 'AIzaSyBJsrIufmPtbESCrLMRG4eDmDjlPIa3Fi0'
+    #API_KEY = env('API_KEY')
 
     try:
         requestPlaceType = request.POST['type']
@@ -59,7 +59,6 @@ def updatePlaceType(request):
             address.append(place.formatted_address)
 
         return JsonResponse({'names': names, 'lat': lat, 'lng': lng, 'address': address}, status=200, safe=False)
-    #	return JsonResponse({'message': 'sucess!'}, status=200)
     except Exception as e:
         print(e)
         return JsonResponse({"message": str(e)}, status=400)
