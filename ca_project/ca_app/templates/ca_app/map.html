@@ -1,0 +1,145 @@
+<!-- templates/ca1_app/map.html -->
+{% extends '../base.html' %}
+
+{% load leaflet_tags %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_filters %}
+{% load i18n %}
+
+{% block title %}{% trans "Map" %}{% endblock %}
+
+{% block extra_header %}
+    {% leaflet_css %}
+    {% leaflet_js %}
+    <style>
+        #map{
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+{% endblock %}
+
+{% block body_content %}
+    {# <h3>{% trans "Map" %}</h3> #}
+    {# <div style="width: 100%"> #}
+    <!-- <p style="font-weight: bold; float: right"> {{ user.username }} is here! </p> -->
+    {% leaflet_map "map" callback="window.map_init_basic" %}
+    {# </div> #}
+{% endblock %}
+
+{% block extra_footer %}
+    <script>
+        var HOST = location.protocol + "//" + location.host;
+        var locationMarker;
+        var circle;
+
+        $("#map").css({
+            "width": "100%",
+            "height": $(document).height() - ($("#header").height() + $("#footer").height() + 45)
+        });
+
+        function map_init_basic(map, options) {
+            {# map = L.map("map"); #}
+            var pos;
+            map.setView([53.5, -8.5], 11)
+            updateLocation(map);
+            map.on('touchstart click dblclick ', function () {
+                updateLocation(map);
+            });
+        }
+
+        // The function updateLocation takes our map object, figures out our location and
+        // passes the map object and location data to a further function (setMapToCurrentLocation)
+        function updateLocation(map) {
+            console.log("In getCurrentLocation");
+            navigator.geolocation.getCurrentPosition(
+                function (pos) {
+                    console.log("Got location");
+                    setMapToCurrentLocation(map, pos);
+                    update_db(pos);
+                },
+                function (err) {
+                    console.log("Location error: " + err.message);
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 30000
+                }
+            );
+        }
+
+        // Create a LatLng object with your current location
+        // Note: Anything starting with L.xxx is a leaflet object
+        // Sets the map to centre to your location
+        function setMapToCurrentLocation(map, pos) {
+            console.log("In setMapToCurrentLocation.");
+            var myLatLon = L.latLng(pos.coords.latitude, pos.coords.longitude);
+            map.flyTo(myLatLon, 16);
+
+            // Adds a marker showing your location and a circle
+            if (locationMarker) {
+                map.removeLayer(locationMarker);
+            }
+
+            locationMarker = L.marker(myLatLon).addTo(map);
+
+            if (circle) {
+                map.removeLayer(circle);
+            }
+
+            // Circle properties
+            circle = L.circle(myLatLon, {
+                color: 'blue',
+                fillColor: 'blue',
+                fillOpacity: 0.2,
+                radius: pos.coords.accuracy
+            }).addTo(map);
+
+            $(".toast-body").html("Found Location<br>Lat: " + myLatLon.lat + " Lon: " + myLatLon.lng);
+            $(".toast").toast('show');
+        }
+
+        function update_db(pos) {
+            var locString = pos.coords.longitude + ", " + pos.coords.latitude;
+            $.ajax({
+                type: "POST",
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                url: HOST + "/ca_app/updatedb/",
+                data: {
+                    lat: pos.coords.longitude,
+                    lon: pos.coords.latitude
+                }
+            }).done(function (data, status, xhr) {
+                console.log(data["message"])
+                var originalMsg = $(".toast-body").html();
+                $(".toast-body").html(originalMsg + "<br/>Updated database<br/>" + data["message"]);
+            }).fail(function (xhr, status, error) {
+                console.log(error);
+                var originalMsg = $(".toast-body").html();
+                $(".toast-body").html(originalMsg + "<br/>" + error);
+            }).always(function () {
+                console.log("find_loc_ed finished");
+                $(".toast").toast('show');
+            });
+        }
+
+        function getCookie(name){
+            var cookieValue = null;
+            if(document.cookie && document.cookie !== ''){
+                var cookies = document.cookie.split(';');
+                for(var i = 0; i <cookies.length; i++){
+                    var cookie = jQuery.trim(cookies[i]);
+                    if(cookie.substring(0, name.length + 1) === (name + '=')){
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+    </script>
+{% endblock %}
