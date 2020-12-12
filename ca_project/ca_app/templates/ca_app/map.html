@@ -21,6 +21,12 @@
 {% endblock %}
 
 {% block body_content %}
+    <select id="placeType" style="float: right" class="browser-default custom-select" onchange="onSelectPlaceType()">
+        <option selected disabled>Pleast choose a type of place</option>
+        <option value="restaurant">Restaurant</option>
+        <option value="cafe">Cafe</option>
+    </select>
+
     {# <h3>{% trans "Map" %}</h3> #}
     {# <div style="width: 100%"> #}
     <!-- <p style="font-weight: bold; float: right"> {{ user.username }} is here! </p> -->
@@ -33,11 +39,70 @@
         var HOST = location.protocol + "//" + location.host;
         var locationMarker;
         var circle;
+        var places = [];
+        var markers = [];
+        var myMap;
+        var currentLat;
+        var currentLng;
+
+        class Place {
+            constructor(name, address, lat, lng) {
+                this.name = name;
+                this.address = address;
+                this.lat = lat;
+                this.lng = lng;
+            }
+        }
 
         $("#map").css({
             "width": "100%",
             "height": $(document).height() - ($("#header").height() + $("#footer").height() + 45)
         });
+
+        function onSelectPlaceType(){
+            var placeType = document.getElementById("placeType").value;
+            removeMarker();
+            $.ajax({
+                type: "POST",
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                url: HOST + "/ca_app/updatePlaceType/",
+                data: {
+                    type: placeType,
+                    lat: currentLat,
+                    lng: currentLng
+                }
+            }).done(function (data, status, xhr) {
+                for (i = 0; i < data['names'].length; i++){
+                    currentPlace = new Place(data['names'][i], data['address'][i], data['lat'][i], data['lng'][i])
+                    places.push(currentPlace)
+                    addMarker(currentPlace);
+                }
+            }).fail(function (xhr, status, error) {
+                console.log(error);
+            })
+        }
+
+        function removeMarker(){
+            if(markers.length != 0){
+                for (i = 0; i < markers.length; i++){
+                    myMap.removeLayer(markers[i]);
+                }
+                markers = new Array();
+                places = new Array();
+            }
+        }
+
+        function addMarker(currentPlace){
+            latLng = L.latLng(currentPlace.lat, currentPlace.lng);
+            locationMarker = L.marker(latLng).addTo(myMap).on('click', function(e){
+                $(".toast-header .mr-auto").html(currentPlace.name);
+                $(".toast-body").html("Address: " + currentPlace.address + "<br>Lat: " + currentPlace.lat + "<br>Lon: " + currentPlace.lng);
+                $(".toast").toast('show');
+            });
+            markers.push(locationMarker);
+        }
 
         function map_init_basic(map, options) {
             {# map = L.map("map"); #}

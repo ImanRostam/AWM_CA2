@@ -32,6 +32,6 @@ class Profile(models.Model):
     location = models.PointField()
 
 
-class Locate(models.Model):
+class LocatePlace(models.Model):
     lon = models.FloatField()
     lat = models.FloatField()
