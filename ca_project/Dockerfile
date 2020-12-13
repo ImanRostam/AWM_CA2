@@ -30,9 +30,6 @@ RUN pip install -r requirements.txt
 # Copy everything in your Django project to the image.
 COPY . /usr/src/app
 
-# Make sure that static files are up to date and available
-RUN python manage.py collectstatic --no-input
-
 # Expose port 8001 on the image. We'll map a localhost port to this later.
 EXPOSE 8001
 
