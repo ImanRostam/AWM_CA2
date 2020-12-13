@@ -18,13 +18,14 @@ import environ
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 env = environ.Env(
     DEBUG=(bool, False),
-    # CSRF_COOKIE_SECURE=(bool, True),
-    # SESSION_COOKIE_SECURE=(bool, True),
+    CSRF_COOKIE_SECURE=(bool, True),
+    SESSION_COOKIE_SECURE=(bool, True),
 )
 
 # reading .env file
@@ -166,8 +167,8 @@ LEAFLET_CONFIG = {
     'OPACITY': 0.5,
 }
 
-# CSRF_COOKIE_SECURE = env("CSRF_COOKIE_SECURE")
-# SESSION_COOKIE_SECURE = env("SESSION_COOKIE_SECURE")
+CSRF_COOKIE_SECURE = env("CSRF_COOKIE_SECURE")
+SESSION_COOKIE_SECURE = env("SESSION_COOKIE_SECURE")
 
 
 # Added for PWA
@@ -175,7 +176,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
-PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'ca_app/templates/serviceworker.js')
+PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'static/serviceworker.js')
 
 PWA_APP_NAME = 'Locate Me'
 PWA_APP_DESCRIPTION = "Finding Halal Restaurants in Dublin"
@@ -193,21 +194,21 @@ PWA_APP_LANG = 'en-IE'
 
 PWA_APP_ICONS = [
     {
-        'src': '/static/images/logo.jpg',
+        'src': '/static/images/logo.png',
         'sizes': '160x160'
     }
 ]
 
 PWA_APP_ICONS_APPLE = [
     {
-        'src': '/static/images/logo.jpg',
+        'src': '/static/images/logo.png',
         'sizes': '160x160'
     }
 ]
 
 PWA_APP_SPLASH_SCREEN = [
     {
-        'src': '/static/images/icons/logo.jpg',
+        'src': '/static/images/icons/logo.png',
         'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
     }
 ]
