@@ -179,7 +179,7 @@ STATICFILES_DIRS = [
 PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'static/serviceworker.js')
 
 PWA_APP_NAME = 'Locate Me'
-PWA_APP_DESCRIPTION = "Finding Halal Restaurants in Dublin"
+PWA_APP_DESCRIPTION = "Finding Places to eat near you"
 PWA_APP_THEME_COLOR = '#0A0302'
 PWA_APP_BACKGROUND_COLOR = '#ffffff'
 PWA_APP_DISPLAY = 'standalone'
@@ -195,14 +195,14 @@ PWA_APP_LANG = 'en-IE'
 PWA_APP_ICONS = [
     {
         'src': '/static/images/logo.png',
-        'sizes': '160x160'
+        'sizes': '144x144'
     }
 ]
 
 PWA_APP_ICONS_APPLE = [
     {
         'src': '/static/images/logo.png',
-        'sizes': '160x160'
+        'sizes': '144x144'
     }
 ]
 
