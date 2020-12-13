@@ -1,13 +1,13 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from googleplaces import GooglePlaces, types, lang
+from googleplaces import GooglePlaces, types
 from .models import LocatePlace
 
 
 # Create your view here
 
 
-def updatedb(request):
+def updateDB(request):
     try:
         lat = request.POST['lat']
         lon = request.POST['lon']
@@ -21,16 +21,21 @@ def updatedb(request):
         return JsonResponse({"message": str(e)}, status=400)
 
 
-def getPlaceType(placeType):
+def getPlace(placeType):
     switcher = {
         'restaurant': types.TYPE_RESTAURANT,
+        'takeaway': types.TYPE_MEAL_TAKEAWAY,
+        'delivery': types.TYPE_MEAL_DELIVERY,
+        'bakery': types.TYPE_BAKERY,
         'cafe': types.TYPE_CAFE,
+        'supermarket': types.TYPE_GROCERY_OR_SUPERMARKET,
+        'store': types.TYPE_STORE,
     }
     return switcher.get(placeType, "Invalid Argument")
 
 
-def updatePlaceType(request):
-    #API_KEY = env('API_KEY')
+def updatePlace(request):
+    API_KEY = 'AIzaSyBJsrIufmPtbESCrLMRG4eDmDjlPIa3Fi0'
 
     try:
         requestPlaceType = request.POST['type']
@@ -48,7 +53,7 @@ def updatePlaceType(request):
 
         query_result = google_places.nearby_search(
             lat_lng={'lat': currentLat, 'lng': currentLng}, keyword="Restaurants",
-            radius=3000, types=[getPlaceType(requestPlaceType)])
+            radius=3000, types=[getPlace(requestPlaceType)])
 
         for place in query_result.places:
             print(place.name)

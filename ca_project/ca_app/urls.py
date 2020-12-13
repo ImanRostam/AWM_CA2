@@ -2,6 +2,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('updatedb/', views.updatedb, name='updatedb'),
-    path('updatePlaceType', views.updatePlaceType, name='updatePlaceType'),
+    path('updateDB/', views.updateDB, name='updateDB'),
+    path('updatePlace/', views.updatePlace, name='updatePlace'),
 ]
