@@ -11,7 +11,7 @@
 
 {% block body_content %}
     <h3>{% trans "Locate Me" %}</h3>
-    <p>This is an application to locate my current location</p>
+    <p>Find nearby eating places!</p>
     {% if user.is_authenticated %}
         <p style="font-size: large">Hi {{ user.username }}!</p>
         <p><a href="{% url 'logout' %}">Log Out</a></p>
